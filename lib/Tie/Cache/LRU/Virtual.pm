@@ -4,8 +4,6 @@ use strict;
 use vars qw($VERSION);
 $VERSION = '0.01';
 
-use Class::ISA;
-
 use base qw(Class::Virtual Class::Data::Inheritable);
 
 __PACKAGE__->mk_classdata('DEFAULT_MAX_SIZE');
