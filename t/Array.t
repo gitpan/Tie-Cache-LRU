@@ -14,7 +14,7 @@ my $test_num = 1;
 BEGIN { $| = 1; $^W = 1; }
 END {print "not ok $test_num\n" unless $loaded;}
 print "1..$Total_tests\n";
-use Tie::Cache::LRU;
+use Tie::Cache::LRU::Array;
 $loaded = 1;
 ok(1, 'compile');
 ######################### End of black magic.
@@ -46,7 +46,7 @@ sub eqarray  {
 BEGIN { $Total_tests = 29 }
 
 my %cache;
-my $tied = tie %cache, 'Tie::Cache::LRU', 5;
+my $tied = tie %cache, 'Tie::Cache::LRU::Array', 5;
 ok(defined $tied, 'tie'); # 2
 
 
@@ -129,10 +129,10 @@ ok( $cache->curr_size == 10 );
 ok( eqarray( [@keys[0..1]], [(keys %cache)[-2,-1]] ) );
 
 %cache = ();
-ok( $cache->curr_size == 0 );
-ok( keys   %cache     == 0 );
-ok( values %cache     == 0 );
-ok( $cache->max_size == 10 );
+ok( $cache->curr_size == 0,             'curr_size of empty cache' );
+ok( keys   %cache     == 0,             'keys() of empty cache' );
+ok( values %cache     == 0,             'values() of empty cache' );
+ok( $cache->max_size == 10,             'max_size() of empty cache' );
 
 }
 
@@ -141,7 +141,7 @@ ok( $cache->max_size == 10 );
 
 # Make sure an empty cache will work.
 my %null_cache;
-$tied = tie %null_cache, 'Tie::Cache::LRU', 0;
+$tied = tie %null_cache, 'Tie::Cache::LRU::Array', 0;
 ok(defined $tied, 'tie() null cache');
 
 $null_cache{foo} = "bar";
