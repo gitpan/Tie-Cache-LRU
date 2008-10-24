@@ -1,8 +1,6 @@
 package Tie::Cache::LRU::LinkedList;
 
 use strict;
-use vars qw($VERSION);
-$VERSION = '0.01';
 
 use Carp::Assert;
 
@@ -132,19 +130,23 @@ sub DELETE {
 # keys() should return most to least recent.
 sub FIRSTKEY {
     my($self) = shift;
-    my $first_node = $self->{freshest};
-    assert($self->{size} == 0 xor defined $first_node);
-    return $first_node->[KEY];
+    my $node = $self->{freshest};
+    assert($self->{size} == 0 xor defined $node);
+
+    my @nodes;
+    do {
+        push @nodes, $node;
+        $node = $node->[PREV];
+    } while defined $node;
+
+    $self->{nodes} = \@nodes;
+    $self->NEXTKEY();
 }
 
 sub NEXTKEY  {
-    my($self, $last_key) = @_;
-    my $last_node = $self->{index}{$last_key};
-    assert(defined $last_node) if DEBUG;
-
-    # NEXTKEY uses PREV, yes.  We're going from newest to oldest.
-    return defined $last_node->[PREV] ? $last_node->[PREV][KEY]
-                              : undef;
+    my $self = shift;
+    my $node = shift @{$self->{nodes}};
+    return $node->[KEY];
 }
 
 
